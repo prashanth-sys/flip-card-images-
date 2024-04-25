@@ -166,7 +166,7 @@ class FlipGame extends Component {
 
   onClickFlipImage = id => {
     const {flippedCards} = this.state
-    const {activeFlippedCards, score} = this.state
+    const {activeFlippedCards} = this.state
 
     // Check if the clicked card is already flipped
     if (flippedCards[id]) {
@@ -197,9 +197,6 @@ class FlipGame extends Component {
           score: prevState.score + 1,
           activeFlippedCards: [],
         }))
-      }
-      if (score === 10) {
-        this.setState({won: false})
       } else {
         // If the names don't match, flip both cards back after a delay
         setTimeout(() => {
@@ -223,15 +220,25 @@ class FlipGame extends Component {
   }
 
   onClickPlayAgain = () => {
-    this.setState({won: true})
+    this.setState({
+      flippedCards: {},
+      timer: '02:00',
+      activeFlippedCards: [],
+      flipCount: 0,
+      won: true,
+      score: 0,
+    })
+    this.startTimer()
   }
 
   render() {
-    const {isModelOpen, flippedCards, timer, flipCount, won, score} = this.state
+    const {isModelOpen, flippedCards, timer, flipCount, score, won} = this.state
+    const gameOver = timer === '00:00' || score === cardsData.length / 2
+
     return (
-      <div className="flip-game-bg-container">
-        {won ? (
-          <div>
+      <div>
+        {won && !gameOver ? (
+          <div className="flip-game-bg-container">
             <div className="flip-rules-content">
               <div className="flip-game-button">
                 <Link to="/card-flip-memory-game" className="link">
@@ -273,9 +280,25 @@ class FlipGame extends Component {
           </div>
         ) : (
           <div>
-            <div className="flip-game-result-container">
-              <h1>congratulations</h1>
+            <div className="flip-result-game-container">
+              <img
+                src={
+                  won
+                    ? 'https://res.cloudinary.com/dlsuy2qn2/image/upload/v1710757985/Smiling_Emoji_with_Eyes_Opened_zauypv.png'
+                    : 'https://res.cloudinary.com/dlsuy2qn2/image/upload/v1710758045/Neutral_Face_Emoji_smpepd.png'
+                }
+                alt={won ? 'grinning face with big eyes' : 'neutral face'}
+                className="flip-result-image"
+              />
+
+              <h1>{won ? 'congratulations' : 'Better luck next time'}</h1>
               <p>No.of Flips - {flipCount}</p>
+              <h1>
+                {won
+                  ? 'You matched all of the cards in record time'
+                  : 'You did not match all of the cards in record time'}
+              </h1>
+
               <button
                 className="flip-play-again"
                 type="button"
